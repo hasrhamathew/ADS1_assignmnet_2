@@ -4,130 +4,116 @@ Created on Sun Dec  4 19:26:32 2022
 
 @author: harsha
 """
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
 
-agriculture = pd.read_csv("Agriculture.csv")
-print(agriculture)
-agriculture = agriculture[['Country Name','1998','2003','2008','2013','2018']]
-agriculture1 = agriculture.set_index('Country Name').transpose()
+def read_file(file_name):
+    """ 
+    This function reads data from a csv file and transpose it. In the end we 
+    will have two dataframes, one with country names as column and the other
+    one with years as column.
 
-print (agriculture1)
-agriculture2 = agriculture1[['United Arab Emirates','Australia','Pakistan','Brazil',
-                             'Switzerland','China','Germany','Spain','United Kingdom',
-                             'India','Japan','Croatia','Bangladesh']]
-                             
-print(agriculture2)
+    Parameter: file_name
 
-CO2_emissions = pd.read_csv("CO2_emissions.csv")
-CO2_emissions = CO2_emissions[['Country Name','1998','2003','2008','2013','2018']]
-CO2_emissions1 = CO2_emissions.set_index('Country Name').transpose()
+    """
 
-print (CO2_emissions1)
-CO2_emissions2 = CO2_emissions1[['United Arab Emirates','Australia','Pakistan','Brazil',
-                             'Switzerland','China','Germany','Spain','United Kingdom',
-                             'India','Japan','Croatia','Bangladesh']]
-                             
-print(CO2_emissions2)
+    data = pd.read_csv(file_name)
+    data = data[['Country Name', '1990', '1995', '2000', '2005',
+                 '2010', '2015', '2019']]
+    year_col = data
+    year_col.set_index("Country Name")
+    country_col = data.transpose()
+    return year_col, country_col
 
 
-coul_sources = pd.read_csv("coul_sources.csv")
+def filter_data(data):
+    """
+    This funtion filters required country names from a list of countries 
+    in the dataframe
+    """
+    data_filter = data[data["Country Name"].isin(country_filter)]
+    return data_filter
 
 
-coul_sources = coul_sources[['Country Name','1998','2003','2008','2013','2018']]
-coul_sources1 = coul_sources.set_index('Country Name').transpose()
-
-print (coul_sources1)
-coul_sources2 = coul_sources1[['United Arab Emirates','Australia','Pakistan','Brazil',
-                             'Switzerland','China','Germany','Spain','United Kingdom',
-                              'India','Japan','Croatia','Bangladesh']]
-                             
-print(coul_sources2.dropna(inplace = True))
-                            
-urban_population = pd.read_csv("Urban_population.csv")
-print(urban_population.dropna())
-         
-urban_population = urban_population[['Country Name','1998','2003','2008','2013','2018']]
-urban_population1 = urban_population.set_index('Country Name').transpose()
-print (urban_population1)
-urban_population2 = urban_population1[['United Arab Emirates','Australia','Pakistan','Brazil',
-                             'Switzerland','China','Germany','Spain','United Kingdom',
-                              'India','Japan','Croatia','Bangladesh']]
-urban_population2 = urban_population2.transpose()
-print(urban_population2)
-
-x = np.arange(len(urban_population2.index))
-width = 0.2
-
-fig, ax = plt.subplots(figsize=(13,14))
-#bar1 = ax.bar(x - 2*width, urban_population2['1998'], width, label='1998')
-bar2 = ax.bar(x - width, urban_population2['2003'], width, label='2003')
-bar3 = ax.bar(x, urban_population2['2008'], width, label='2008')
-bar4 = ax.bar(x + width, urban_population2['2013'], width, label='2013')
-bar5 = ax.bar(x + 2*width, urban_population2['2018'], width, label='2018')
-
-ax.set_ylabel('Ratio')
-ax.set_title('URBAN POPULATION', size=12,)
-ax.set_xticks(x, urban_population2.index, rotation = 90)
-ax.set_xlabel('Country Names')
-ax.legend()
-
-#ax.bar_lurban_population2.index(bar1, padding=3)
-ax.bar_urban_population2.index(bar2, padding=3)
-ax.bar_urban_population2.index(bar3, padding=3)
-ax.bar_urban_population2.index(bar4, padding=3)
-ax.bar_urban_population2.index(bar5, padding=3)
-
-fig.tight_layout()
-
-plt.show()
-
-years = ['1998','2003','2008','2013','2018']
-x = np.arange(len(years))
-width = 0.35
-
-plt.figure()
-urban_population2.plot(x = 'Index', y = 'years', kind = 'bar' )
-plt.title("jjj",fontsize = 12)
-plt.xlabel('Country Name')
-plt.xticks(rotation = 90)
-plt.ylabel('Ratio')
-plt.legend(frameon = False, fontsize = 7)
-plt.show()
-
-plt.figure(figsize=(13,14)) 
-plt.xlabel("Country Name")
-plt.ylabel("Ratio")
-plt.title("Urban Population",size=20)
-plt.bar(urban_population1.index, urban_population1["1998"])
-plt.xticks(rotation=90)
-plt.savefig('urban.png')
-plt.show()
-
-urban_population2 = urban_population1[['United Arab Emirates','Australia','Pakistan','Brazil',
-                             'Switzerland','China','Germany','Spain','United Kingdom',
-                              'India','Japan','Croatia','Bangladesh']]
+def bar_plot(df_name, title="", ylabel="", savefigure=""):
+    """
+    This function produce a bargraph.
+    Parameters: df_name, title, ylabel, savefigure
+    """
+    plt.figure(figsize=(16, 17))
+    years = ['2000', '2005', '2010', '2019']
+    df_name.plot(x="Country Name", y=years, kind='bar')
+    plt.title(title, fontsize=12)
+    plt.xlabel('Country Names', fontsize=5)
+    plt.xticks(fontsize=5, rotation=45)
+    plt.ylabel(ylabel, fontsize=5)
+    plt.yticks(fontsize=5)
+    plt.legend(frameon=False, fontsize=6)
+    plt.savefig(savefigure, bbox_inches="tight", dpi=200)
+    plt.show()
 
 
-countryNames = ['United Arab Emirates','Australia','Pakistan','Brazil',
-                             'Switzerland','China','Germany','Spain','United Kingdom',
-                              'India','Japan','Croatia','Bangladesh']                 
+def line_plot(df_name, year, countries, xlabel="", ylabel="", title="",
+              savefigure=""):
+    """
+    This function produce a lineplot.
+    Parameters: df_name, year, countries, xlabel, ylabel, title, savefigure
+    """
+
+    plt.figure(figsize=(16, 17))
+    plt.plot(year, df_name[countries], label=countries)
+    plt.xlabel(xlabel, fontsize=10)
+    plt.ylabel(ylabel, fontsize=10)
+    plt.title(title, fontsize=20)
+    plt.legend(loc="upper right", fontsize=10)
+    plt.savefig(savefigure, dpi=200)
+    plt.show()
 
 
-greenhouse_gas = greenhouse_gas[['Country Name','1998','2003','2008','2013','2018']]
-greenhouse_gas1 = greenhouse_gas.set_index('Country Name').transpose()
-greenhouse_gas = pd.read_csv("greenhouse_gas.csv")
-print(greenhouse_gas.dropna())
+country_filter = ['United Arab Emirates', 'Australia', 'Pakistan',
+                  'Switzerland', 'China', 'Germany', 'Spain', 'United Kingdom',
+                  'India', 'Japan', 'Croatia']
+
+# Reading the csv files
+urban_population, urban_population_transpose = read_file(
+    "Urban_population.csv")
+co2_emission, co2_emission_transpose = read_file("CO2_emissions.csv")
+greenhouse, greenhouse_transpose = read_file("greenhouse_gas.csv")
+coal_sources, coal_sources_transpose = read_file("coal_sources.csv")
+
+# Filtering the data
+filtered_urban = filter_data(urban_population)
+filtered_co2 = filter_data(co2_emission)
+filtered = filter_data(greenhouse)
+
+# Setting the index as country name
+filtered_greenhouse = filtered.set_index('Country Name')
+filtered_greenhouse.index.name = None
+filtered = filter_data(coal_sources)
+filtered_coal = filtered.set_index('Country Name')
+filtered_coal.index.name = None
 
 
-print (greenhouse_gas1)
-greenhouse_gas2 = greenhouse_gas1[['United Arab Emirates','Australia','Pakistan','Brazil',
-                             'Switzerland','China','Germany','Spain','United Kingdom',
-                              'India','Japan','Croatia','Bangladesh']]
-                             
-print(greenhouse_gas2.dropna(inplace = True))
+filtered = filter_data(urban_population)
+filtered_pop = filtered.set_index('Country Name')
+filtered_pop.index.name = None
+
+# Finding the mean for urban population
+urban_population_mean = np.mean(filtered_pop.transpose()[country_filter])
+
+# Calling the functions with proper arguments
+bar_plot(filtered_urban, "Urban Population", "Ratio", "urban_population.png")
+bar_plot(filtered_co2, "CO2 Emission", "Ratio", "co2_emission.png")
+line_plot(filtered_greenhouse.transpose(), filtered_greenhouse.transpose().index,
+          country_filter, "Years", "Ratio",
+          "Greenhouse Gas Emission", "greenhouse.png")
+line_plot(filtered_coal.transpose(), filtered_coal.transpose().index,
+          country_filter, "years", "Ratio",
+          "Electricity production from coal sources", "coal_sources.png")
+
 
 
 
